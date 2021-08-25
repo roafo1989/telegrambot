@@ -1,5 +1,7 @@
 package ru.roafo.telegrambot.command;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.roafo.telegrambot.domain.GroupSub;
 import ru.roafo.telegrambot.javarushclient.dto.GroupDiscussionInfo;
@@ -21,12 +23,14 @@ import static ru.roafo.telegrambot.command.CommandUtils.*;
 /**
 * Add Group subscription {@link Command}.
 */
+@Component
 public class AddGroupSubCommand implements Command {
 
    private final SendBotMessageService sendBotMessageService;
    private final JavaRushGroupClient javaRushGroupClient;
    private final GroupSubService groupSubService;
 
+   @Autowired
    public AddGroupSubCommand(SendBotMessageService sendBotMessageService, JavaRushGroupClient javaRushGroupClient,
                              GroupSubService groupSubService) {
        this.sendBotMessageService = sendBotMessageService;

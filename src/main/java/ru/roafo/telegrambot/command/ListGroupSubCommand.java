@@ -1,6 +1,8 @@
 package ru.roafo.telegrambot.command;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.roafo.telegrambot.domain.GroupSub;
 import ru.roafo.telegrambot.domain.TelegramUser;
@@ -16,11 +18,13 @@ import static ru.roafo.telegrambot.command.CommandUtils.getChatId;
 /**
 * {@link Command} for getting list of {@link GroupSub}.
 */
+@Component
 public class ListGroupSubCommand implements Command {
 
    private final SendBotMessageService sendBotMessageService;
    private final TelegramUserService telegramUserService;
 
+   @Autowired
    public ListGroupSubCommand(SendBotMessageService sendBotMessageService, TelegramUserService telegramUserService) {
        this.sendBotMessageService = sendBotMessageService;
        this.telegramUserService = telegramUserService;

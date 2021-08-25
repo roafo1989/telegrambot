@@ -1,5 +1,7 @@
 package ru.roafo.telegrambot.command;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.roafo.telegrambot.service.SendBotMessageService;
 
@@ -9,6 +11,7 @@ import static java.lang.String.*;
 /**
 * Admin Help {@link Command}.
 */
+@Component
 public class AdminHelpCommand implements Command {
 
    public static final String ADMIN_HELP_MESSAGE = format("✨<b>Доступные команды админа</b>✨\n\n"
@@ -18,6 +21,7 @@ public class AdminHelpCommand implements Command {
 
    private final SendBotMessageService sendBotMessageService;
 
+   @Autowired
    public AdminHelpCommand(SendBotMessageService sendBotMessageService) {
        this.sendBotMessageService = sendBotMessageService;
    }

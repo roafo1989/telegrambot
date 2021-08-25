@@ -1,11 +1,13 @@
 package ru.roafo.telegrambot.command;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.roafo.telegrambot.service.SendBotMessageService;
 
 import static ru.roafo.telegrambot.command.CommandName.*;
 
-
+@Component
 public class HelpCommand implements Command {
     private final SendBotMessageService sendBotMessageService;
 
@@ -31,6 +33,7 @@ public class HelpCommand implements Command {
             HELP.getCommandName()
     );
 
+    @Autowired
     public HelpCommand(SendBotMessageService sendBotMessageService) {
         this.sendBotMessageService = sendBotMessageService;
     }

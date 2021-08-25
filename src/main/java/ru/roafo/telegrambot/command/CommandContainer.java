@@ -2,46 +2,64 @@ package ru.roafo.telegrambot.command;
 
 
 import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.roafo.telegrambot.command.annotation.AdminCommand;
-import ru.roafo.telegrambot.javarushclient.service.GroupSubService;
-import ru.roafo.telegrambot.javarushclient.service.JavaRushGroupClient;
 import ru.roafo.telegrambot.service.SendBotMessageService;
-import ru.roafo.telegrambot.service.TelegramUserService;
 
 import java.util.List;
 
 import static java.util.Objects.nonNull;
 import static ru.roafo.telegrambot.command.CommandName.*;
 
+@Component
 public class CommandContainer {
 
-    private final ImmutableMap<String, Command> commandMap;
+    public static String COMMAND_PREFIX = "/";
 
-    private final Command unknownCommand;
+    private ImmutableMap<String, Command> commandMap;
 
-    private final List<String> admins;
+    private Command unknownCommand;
 
-    public CommandContainer(SendBotMessageService sendBotMessageService, TelegramUserService telegramUserService,
-                            JavaRushGroupClient javaRushGroupClient, GroupSubService groupSubService, List<String> admins) {
-        this.admins = admins;
+    @Value("#{'${bot.admins}'.split(',')}")
+    private List<String> admins;
 
+    public CommandContainer(SendBotMessageService sendBotMessageService,
+                            StartCommand startCommand,
+                            StopCommand stopCommand,
+                            HelpCommand helpCommand,
+                            NoCommand noCommand,
+                            StatCommand statCommand,
+                            AddGroupSubCommand addGroupSubCommand,
+                            ListGroupSubCommand listGroupSubCommand,
+                            AdminHelpCommand adminHelpCommand) {
         commandMap = ImmutableMap.<String, Command>builder()
-                .put(START.getCommandName(), new StartCommand(sendBotMessageService, telegramUserService))
-                .put(STOP.getCommandName(), new StopCommand(sendBotMessageService, telegramUserService))
-                .put(HELP.getCommandName(), new HelpCommand(sendBotMessageService))
-                .put(NO.getCommandName(), new NoCommand(sendBotMessageService))
-                .put(STAT.getCommandName(), new StatCommand(sendBotMessageService, telegramUserService))
-                .put(ADD_GROUP_SUB.getCommandName(), new AddGroupSubCommand(sendBotMessageService, javaRushGroupClient, groupSubService))
-                .put(ADD_GROUP_SUB_RUS.getCommandName(), new AddGroupSubCommand(sendBotMessageService, javaRushGroupClient, groupSubService))
-                .put(LIST_GROUP_SUB.getCommandName(), new ListGroupSubCommand(sendBotMessageService, telegramUserService))
-                .put(ADMIN_HELP.getCommandName(), new AdminHelpCommand(sendBotMessageService))
+                .put(START.getCommandName(), startCommand)
+                .put(STOP.getCommandName(), stopCommand)
+                .put(HELP.getCommandName(), helpCommand)
+                .put(NO.getCommandName(), noCommand)
+                .put(STAT.getCommandName(), statCommand)
+                .put(ADD_GROUP_SUB.getCommandName(), addGroupSubCommand)
+                .put(ADD_GROUP_SUB_RUS.getCommandName(), addGroupSubCommand)
+                .put(LIST_GROUP_SUB.getCommandName(), listGroupSubCommand)
+                .put(ADMIN_HELP.getCommandName(), adminHelpCommand)
                 .build();
 
         unknownCommand = new UnknownCommand(sendBotMessageService);
     }
 
-    public Command retrieveCommand(String commandIdentifier) {
-        return commandMap.getOrDefault(commandIdentifier, unknownCommand);
+    public Command retrieveCommand(Update update) {
+        String message = CommandUtils.getMessage(update);
+        if (message.startsWith(COMMAND_PREFIX)) {
+            String commandIdentifier = message.split(" ")[0];
+
+            return commandMap.getOrDefault(commandIdentifier, unknownCommand);
+        } else if (message.toLowerCase().contains("привет") || (message.toLowerCase().contains("ты кто")) || message.contains("?")) {
+            return commandMap.getOrDefault(START.getCommandName(), unknownCommand);
+        } else {
+            return commandMap.getOrDefault(NO.getCommandName(), unknownCommand);
+        }
     }
 
     public Command retrieveCommand(String commandIdentifier, String username) {

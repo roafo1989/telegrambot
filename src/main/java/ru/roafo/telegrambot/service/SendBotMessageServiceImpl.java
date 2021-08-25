@@ -14,7 +14,7 @@ public class SendBotMessageServiceImpl implements SendBotMessageService {
     private JavarushTelegramBot bot;
 
     @Autowired
-    public SendBotMessageServiceImpl(JavarushTelegramBot bot) {
+    public void setBot(JavarushTelegramBot bot) {
         this.bot = bot;
     }
 
@@ -24,12 +24,10 @@ public class SendBotMessageServiceImpl implements SendBotMessageService {
         sendMessage.setChatId(chatId);
         sendMessage.enableHtml(true);
         sendMessage.setText(message);
-
         try {
             bot.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            //todo add logging to the project.
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("TelegramApiException");
         }
     }
 
