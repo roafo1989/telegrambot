@@ -1,9 +1,12 @@
 package ru.roafo.telegrambot.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.roafo.telegrambot.service.SendBotMessageService;
+
+import java.nio.charset.StandardCharsets;
 
 /**
 * No {@link Command}.
@@ -13,8 +16,8 @@ public class NoCommand implements Command {
 
    private final SendBotMessageService sendBotMessageService;
 
-   public static final String NO_MESSAGE = "Я поддерживаю команды, начинающиеся со слеша(/).\n"
-           + "Для просмотра списка команд введите '/help'";
+   @Value("${message.noMessage}")
+   public String noMessage;
 
    @Autowired
    public NoCommand(SendBotMessageService sendBotMessageService) {
@@ -23,7 +26,7 @@ public class NoCommand implements Command {
 
    @Override
    public void execute(Update update) {
-       sendBotMessageService.sendMessage(update.getMessage().getChatId().toString(), NO_MESSAGE);
+       sendBotMessageService.sendMessage(update.getMessage().getChatId().toString(), new String(noMessage.getBytes(StandardCharsets.ISO_8859_1)));
    }
 
     @Override

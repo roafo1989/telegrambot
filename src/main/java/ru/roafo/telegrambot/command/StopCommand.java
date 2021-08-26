@@ -7,6 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.roafo.telegrambot.service.SendBotMessageService;
 import ru.roafo.telegrambot.service.TelegramUserService;
 
+import java.nio.charset.StandardCharsets;
+
 /**
 * Stop {@link Command}.
 */
@@ -27,7 +29,7 @@ public class StopCommand implements Command {
     @Override
     public void execute(Update update) {
         String chatId = update.getMessage().getChatId().toString();
-        sendBotMessageService.sendMessage(chatId, stopMessage);
+        sendBotMessageService.sendMessage(chatId, new String(stopMessage.getBytes(StandardCharsets.ISO_8859_1)));
 
         telegramUserService.findByChatId(chatId)
                 .ifPresent(it -> {

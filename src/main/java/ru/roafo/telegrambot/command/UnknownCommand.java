@@ -1,16 +1,19 @@
 package ru.roafo.telegrambot.command;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.roafo.telegrambot.service.SendBotMessageService;
+
+import java.nio.charset.StandardCharsets;
 
 /**
 * Unknown {@link Command}.
 */
 public class UnknownCommand implements Command {
 
-   public static final String UNKNOWN_MESSAGE = "Не понимаю вас \uD83D\uDE1F, " +
-           "напишите '/help', чтобы узнать известные мне команды.";
+   @Value("${message.unknown}")
+   public String unknownMessage;
 
    private final SendBotMessageService sendBotMessageService;
 
@@ -20,7 +23,7 @@ public class UnknownCommand implements Command {
 
    @Override
    public void execute(Update update) {
-       sendBotMessageService.sendMessage(update.getMessage().getChatId().toString(), UNKNOWN_MESSAGE);
+       sendBotMessageService.sendMessage(update.getMessage().getChatId().toString(), new String(unknownMessage.getBytes(StandardCharsets.ISO_8859_1)));
    }
 
     @Override

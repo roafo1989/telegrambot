@@ -1,6 +1,7 @@
 package ru.roafo.telegrambot.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -8,15 +9,14 @@ import ru.roafo.telegrambot.domain.TelegramUser;
 import ru.roafo.telegrambot.service.SendBotMessageService;
 import ru.roafo.telegrambot.service.TelegramUserService;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Component
 public class StartCommand implements Command {
 
-    private String startMessage = "Привет, %s!\n" +
-            "Меня зовут Jarvis, и я помогу тебе быть в курсе последних статей тех авторов, котрые тебе интересны.\n" +
-            "Давай начнём?\n" +
-            "Введи /help, чтобы узнать мои возможности";
+    @Value("${message.start}")
+    private String startMessage;
 
     private SendBotMessageService sendBotMessageService;
 
@@ -64,7 +64,7 @@ public class StartCommand implements Command {
 
     private String generateStartText(Update update) {
         String userName = startCommand.getUserName(update);
-        return String.format(startMessage, userName);
+        return String.format(new String(startMessage.getBytes(StandardCharsets.ISO_8859_1)), userName);
     }
 
     protected String getUserName(Update update) {
